@@ -33,7 +33,13 @@ public class HibernateConfig {
         dataSource.setUrl("jdbc:h2:mem:db;DB_CLOSE_DELAY=-1");
         dataSource.setUsername("sa");
         dataSource.setPassword("sa");
-
+        //Сконфигурировать connection pool http://www.mastertheboss.com/hibernate-jpa/hibernate-configuration/configure-a-connection-pool-with-hibernate/
+        // Minimum number of ideal connections in the pool
+        dataSource.setMinIdle(0);
+        // Maximum number of ideal connections in the pool
+        dataSource.setMaxIdle(5);
+        // Maximum number of actual connection in the pool
+        dataSource.setMaxTotal(20);
         return dataSource;
     }
 
@@ -47,11 +53,20 @@ public class HibernateConfig {
 
     private Properties hibernateProperties() {
         Properties hibernateProperties = new Properties();
+        //Опция  <property name="hibernate.hbm2ddl.auto">update</property>
+        // говорит Hibernate, что надо сканировать все классы, имеющие аннотацию @Entity и
+        // обновить схему таблиц базы данных сообразно этим классам
+        //Hibernate: drop table User if exists
+        //Hibernate: drop sequence if exists hibernate_sequence
+        //Hibernate: create sequence hibernate_sequence start with 1 increment by 1
+        //Hibernate: create table User (id integer not null, name varchar(255), primary key (id))
         hibernateProperties.setProperty(
                 "hibernate.hbm2ddl.auto", "create-drop");
         hibernateProperties.setProperty(
                 "hibernate.dialect", "org.hibernate.dialect.H2Dialect");
         hibernateProperties.setProperty("hibernate.show_sql", "true");
+       // hibernateProperties.setProperty("hibernate.format_sql", "true");
+        hibernateProperties.setProperty("hibernate.generate_statistics", "true");
         return hibernateProperties;
     }
 }

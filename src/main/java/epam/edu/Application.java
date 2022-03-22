@@ -20,14 +20,13 @@ public class Application {
             user.setName("a");
             //генерирует и добавляет Id Hibernate: call next value for hibernate_sequence
             //также добавляет в Map<EntityKey, Object>((SessionImpl) session).persistenceContext.entitiesByKey
-            //новую сущность.
+            //новую сущность. Основной класс - StatefulPersistentContext
             session.persist(user);
             //Hibernate: insert into User (name, id) values (?, ?)
             session.save(user);
-            Transaction transaction = session.getTransaction();
-            transaction.begin();
+            session.beginTransaction();
             session.flush();//flush упал без транзакции
-            transaction.commit();
+            session.getTransaction().commit();
             session.detach(user);//убрал id user из Map
             //при закрытии session очищаются все Map, хранившие объекты, и
             //объекты, которые открывались для автогенерации

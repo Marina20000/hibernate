@@ -1,0 +1,25 @@
+https://howtodoinjava.com/hibernate/hibernate-c3p0-connection-pool-configuration-tutorial/
+Thankfully, Hibernate is designed to use a connection pool by default,
+an internal implementation. However, Hibernate’s built-in connection
+pooling isn’t designed for production use. In production, we would use an external
+connection pool by using either a database connection provided by JNDI or an external
+connection pool configured via parameters and classpath.
+<dependency>
+    <groupId>org.hibernate</groupId>
+    <artifactId>hibernate-c3p0</artifactId>
+    <version>5.4.17.Final</version>
+</dependency>
+<dependency>
+  <groupId>c3p0</groupId>
+  <artifactId>c3p0</artifactId>
+  <version>0.9.5.3</version>
+</dependency>
+<property name="hibernate.c3p0.min_size">10</property>
+<property name="hibernate.c3p0.max_size">20</property>
+<property name="hibernate.c3p0.acquire_increment">1</property>
+<property name="hibernate.c3p0.idle_test_period">3000</property>
+<property name="hibernate.c3p0.max_statements">50</property>
+<property name="hibernate.c3p0.timeout">1800</property>
+<property name="hibernate.c3p0.validate">1800</property>
+<property name="hibernate.c3p0.unreturnedConnectionTimeout">30</property>
+<property name="hibernate.c3p0.debugUnreturnedConnectionStackTraces">true</property>
