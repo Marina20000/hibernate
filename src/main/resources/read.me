@@ -23,3 +23,57 @@ connection pool configured via parameters and classpath.
 <property name="hibernate.c3p0.validate">1800</property>
 <property name="hibernate.c3p0.unreturnedConnectionTimeout">30</property>
 <property name="hibernate.c3p0.debugUnreturnedConnectionStackTraces">true</property>
+
+Замечание о транзакциях: транзакция на одно соединение может быть только одна
+Из статьи 16-го года https://easyjava.ru/data/pool/ispolzovanie-pulov-soedinenij-v-hibernate/
+Дело в том, что как и в случае в JDBC, Hibernate открывает ровно одно соединение с базой данных
+и разрешает только одному объекту Session использовать его.
+про пул соединений также есть в https://easyjava.ru/data/hibernate/hibernate-i-postgresql-primery-nastrojki/
+
+new DriverManagerDataSource();
+ Simple implementation of the standard JDBC DataSource interface, configuring a plain old
+ JDBC Driver via bean properties, and returning a new Connection for every getConnection call.
+NOTE: This class is not an actual connection pool; it does not actually pool Connections.
+It just serves as simple replacement for a full-blown connection pool, implementing the same
+standard interface, but creating new Connections on every call.
+Useful for test or standalone environments outside of a J2EE container, either as a DataSource bean
+in a corresponding ApplicationContext or in conjunction with a simple JNDI environment.
+Pool-assuming Connection.close() calls will simply close the Connection, so any DataSource-aware
+persistence code should work.
+In a J2EE container, it is recommended to use a JNDI DataSource provided by the container.
+Such a DataSource can be exposed as a DataSource bean in a Spring ApplicationContext via
+JndiObjectFactoryBean, for seamless switching to and from a local DataSource bean like this class.
+For tests, you can then either set up a mock JNDI environment through Spring's
+SimpleNamingContextBuilder, or switch the bean definition to a local DataSource
+(which is simpler and thus recommended).
+If you need a "real" connection pool outside of a J2EE container, consider Apache's Jakarta
+Commons DBCP or C3P0. Commons DBCP's BasicDataSource and C3P0's ComboPooledDataSource are full
+connection pool beans, supporting the same basic properties as this class plus specific
+settings (such as minimal/maximal pool size etc).
+
+Commons DBCP's BasicDataSource can even be used as a direct replacement for an instance of this class just by changing the class name of the bean definition to "org.apache.commons.dbcp.BasicDataSource", because the names of all common properties match exactly. Note that both BasicDataSource and ComboPooledDataSource should be defined with destroy-method="close", for immediate shutdown when the Spring ApplicationContext shuts down.
+
+Логирование всех процессов в Hibernate:   <logger name="org.hibernate" level="TRACE" />
+т.е. логирование деятельности всех классов в org.hibernate
+
+Entity
+
+Все классы, которые могут быть сохранены в базе данных называются entity(сущность)
+и на них налагаются определённые требования:
+
+    Наличие публично доступного конструктора без аргументов
+    Класс, его методы и сохраняемые поля не должны быть final
+     Если объект Entity класса будет передаваться по значению как отдельный объект (detached object), например через удаленный интерфейс (through a remote interface), он так же должен реализовывать Serializable интерфейс.
+    Сохраняемые поля должны быть доступны только с использованием методов класса.
+
+Эти требования в точности соответствуют требованиям JPA.
+
+Каждый сохраняемый класс помечается аннотацией @Entity, говорящей Hibernate,
+что этот класс является сущностью. Помимо того, в каждом классе, помеченном @Entity
+должно быть поле, имеющее аннотацию @Id, говорящее Hibernate, что это поле может быть
+использовано как первичный ключ в базе данных и что по значению этого поля Hibernate
+может отличать один объект от другого. Честно говоря, полей с @Id может быть несколько
+и механизм первичного ключа несколько сложнее, но я рассмотрю это в отдельной статье.
+Стоит отметить, что Hibernate использует аннотации из JPA для определения сущностей.
+Раньше поддерживались и собственные аннотации Hibernate, но с недавних пор они признаны
+устаревшими.

@@ -28,11 +28,25 @@ public class HibernateConfig {
 
     @Bean
     public DataSource dataSource() {
+        //https://easyjava.ru/data/pool/nastrojka-dbcp/
+//        DBCP, как это ни удивительно звучит, ещё одна библиотека для создания пулов соединений. Вместе с HikariCP и c3p0 они составляют триумвират наиболее популярных библиотек пулов для java. DBCP разрабатывается The Apache Foundation, что сделало его некоторым образом тяжёловесным.
+//        Простое создание пула соединений
+//        BasicDataSource ds = new BasicDataSource();
+//        ds.setDriverClassName("org.postgresql.Driver");
+//        ds.setUrl("jdbc:postgresql://127.0.0.1/test");
+//        ds.setUsername("test");
+//        ds.setPassword("test");
+        BasicDataSource ds = new BasicDataSource();
+        ds.setDriverClassName("org.postgresql.Driver");
+        ds.setUrl("jdbc:postgresql://127.0.0.1/test");
+        ds.setUsername("test");
+        ds.setPassword("test");
         BasicDataSource dataSource = new BasicDataSource();
         dataSource.setDriverClassName("org.h2.Driver");
         dataSource.setUrl("jdbc:h2:mem:db;DB_CLOSE_DELAY=-1");
         dataSource.setUsername("sa");
         dataSource.setPassword("sa");
+
         //Сконфигурировать connection pool http://www.mastertheboss.com/hibernate-jpa/hibernate-configuration/configure-a-connection-pool-with-hibernate/
         // Minimum number of ideal connections in the pool
         dataSource.setMinIdle(0);
@@ -40,6 +54,7 @@ public class HibernateConfig {
         dataSource.setMaxIdle(5);
         // Maximum number of actual connection in the pool
         dataSource.setMaxTotal(20);
+
         return dataSource;
     }
 
