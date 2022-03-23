@@ -51,10 +51,25 @@ Commons DBCP or C3P0. Commons DBCP's BasicDataSource and C3P0's ComboPooledDataS
 connection pool beans, supporting the same basic properties as this class plus specific
 settings (such as minimal/maximal pool size etc).
 
-Commons DBCP's BasicDataSource can even be used as a direct replacement for an instance of this class just by changing the class name of the bean definition to "org.apache.commons.dbcp.BasicDataSource", because the names of all common properties match exactly. Note that both BasicDataSource and ComboPooledDataSource should be defined with destroy-method="close", for immediate shutdown when the Spring ApplicationContext shuts down.
+Commons DBCP's BasicDataSource can even be used as a direct replacement for an instance of this
+class just by changing the class name of the bean definition to
+"org.apache.commons.dbcp.BasicDataSource", because the names of all common properties match exactly.
+Note that both BasicDataSource and ComboPooledDataSource should be defined with
+destroy-method="close", for immediate shutdown when the Spring ApplicationContext shuts down.
 
 Логирование всех процессов в Hibernate:   <logger name="org.hibernate" level="TRACE" />
 т.е. логирование деятельности всех классов в org.hibernate
+
+Автогенерация таблиц.
+Для Postgres
+hibernateProperties.setProperty("hibernate.hbm2ddl.auto", "create-drop"); - пришлось закомментировать,
+т.к. в первый раз создались таблицы и последовательности, а потом не все удалялось, и
+при следующих запусках с любыми параметрами были ошибки, что уже что-нибудь существует.
+        validate: проверить схему, не вносить изменения в базу данных.
+        update: обновить схему.
+        create: создает схему, уничтожая предыдущие данные.
+        create-drop: отказаться от схемы, когда SessionFactory закрывается явно, как правило, когда приложение остановлено.
+Эта пропертя актуальна либо для первого запуска, либо для H2.
 
 Entity
 
@@ -73,7 +88,7 @@ Entity
 должно быть поле, имеющее аннотацию @Id, говорящее Hibernate, что это поле может быть
 использовано как первичный ключ в базе данных и что по значению этого поля Hibernate
 может отличать один объект от другого. Честно говоря, полей с @Id может быть несколько
-и механизм первичного ключа несколько сложнее, но я рассмотрю это в отдельной статье.
-Стоит отметить, что Hibernate использует аннотации из JPA для определения сущностей.
-Раньше поддерживались и собственные аннотации Hibernate, но с недавних пор они признаны
-устаревшими.
+и механизм первичного ключа несколько сложнее.
+
+Автогенерация ключей
+https://habr.com/ru/company/haulmont/blog/653843/

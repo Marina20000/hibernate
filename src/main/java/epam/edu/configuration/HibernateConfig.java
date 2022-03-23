@@ -30,22 +30,12 @@ public class HibernateConfig {
     public DataSource dataSource() {
         //https://easyjava.ru/data/pool/nastrojka-dbcp/
 //        DBCP, как это ни удивительно звучит, ещё одна библиотека для создания пулов соединений. Вместе с HikariCP и c3p0 они составляют триумвират наиболее популярных библиотек пулов для java. DBCP разрабатывается The Apache Foundation, что сделало его некоторым образом тяжёловесным.
-//        Простое создание пула соединений
-//        BasicDataSource ds = new BasicDataSource();
-//        ds.setDriverClassName("org.postgresql.Driver");
-//        ds.setUrl("jdbc:postgresql://127.0.0.1/test");
-//        ds.setUsername("test");
-//        ds.setPassword("test");
-        BasicDataSource ds = new BasicDataSource();
-        ds.setDriverClassName("org.postgresql.Driver");
-        ds.setUrl("jdbc:postgresql://127.0.0.1/test");
-        ds.setUsername("test");
-        ds.setPassword("test");
+//        Простое создание пула соединений:
         BasicDataSource dataSource = new BasicDataSource();
-        dataSource.setDriverClassName("org.h2.Driver");
-        dataSource.setUrl("jdbc:h2:mem:db;DB_CLOSE_DELAY=-1");
-        dataSource.setUsername("sa");
-        dataSource.setPassword("sa");
+        dataSource.setDriverClassName("org.postgresql.Driver");
+        dataSource.setUrl("jdbc:postgresql://127.0.0.1/test");
+        dataSource.setUsername("tester");
+        dataSource.setPassword("q1w2e3r4");
 
         //Сконфигурировать connection pool http://www.mastertheboss.com/hibernate-jpa/hibernate-configuration/configure-a-connection-pool-with-hibernate/
         // Minimum number of ideal connections in the pool
@@ -75,8 +65,14 @@ public class HibernateConfig {
         //Hibernate: drop sequence if exists hibernate_sequence
         //Hibernate: create sequence hibernate_sequence start with 1 increment by 1
         //Hibernate: create table User (id integer not null, name varchar(255), primary key (id))
-        hibernateProperties.setProperty(
-                "hibernate.hbm2ddl.auto", "create-drop");
+        //hibernateProperties.setProperty("hibernate.hbm2ddl.auto", "create-drop"); - пришлось закомментировать,
+        //т.к. в первый раз создались таблицы и последовательности, а потом не все удалялось, и
+        //при следующих запусках с любыми параметрами были ошибки, что уже что-нибудь существует.
+//        validate: проверить схему, не вносить изменения в базу данных.
+//        update: обновить схему.
+//        create: создает схему, уничтожая предыдущие данные.
+//        create-drop: отказаться от схемы, когда SessionFactory закрывается явно, как правило, когда приложение остановлено.
+
         hibernateProperties.setProperty(
                 "hibernate.dialect", "org.hibernate.dialect.H2Dialect");
         hibernateProperties.setProperty("hibernate.show_sql", "true");
