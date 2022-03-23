@@ -1,12 +1,7 @@
 package epam.edu.domain;
 
-import javax.persistence.CascadeType;
+import javax.persistence.*;
 
-import javax.persistence.Entity;
-import javax.persistence.GeneratedValue;
-import javax.persistence.Id;
-import javax.persistence.OneToMany;
-import javax.persistence.Table;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -15,7 +10,10 @@ import java.util.List;
 public class Post {
 
     @Id
-    @GeneratedValue
+    //сгенерировалась последовательность post_id_seq
+    //для Postgress, Oracle рекомендуется GenerationType.SEQUENCE
+    //MySQL не поддерживает SEQUENCE, для этой db только IDENTITY
+    @GeneratedValue(strategy = GenerationType.SEQUENCE)
     private Long id;
 
     private String title;
@@ -29,4 +27,16 @@ public class Post {
     private List<PostComment> comments = new ArrayList<>();
 
     //сгенерировался дефолтный конструктор
+
+    public void setId(Long id) {
+        this.id = id;
+    }
+
+    public void setTitle(String title) {
+        this.title = title;
+    }
+
+    public void setComments(List<PostComment> comments) {
+        this.comments = comments;
+    }
 }
