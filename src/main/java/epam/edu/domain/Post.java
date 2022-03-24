@@ -1,5 +1,7 @@
 package epam.edu.domain;
 
+import org.hibernate.annotations.DynamicUpdate;
+
 import javax.persistence.*;
 
 import java.util.ArrayList;
@@ -7,6 +9,9 @@ import java.util.List;
 
 @Entity(name = "Post")
 @Table(name = "post")
+@DynamicUpdate //будет генерировать запрос на обновление ТОЛЬКО тех полей, которые поменялись
+//проверка полей, которые поменялись, сопровождается довольно большими накладными расходами
+//поэтому будет работать гораздо медленнее. Оправдано только там, где есть много полей
 public class Post {
 
     @Id
@@ -24,6 +29,9 @@ public class Post {
             cascade = CascadeType.ALL,
             orphanRemoval = true
     )
+    //CascadeType.ALL Каскад.ALL распространяет все операции, включая операции,
+    // связанные с гибернацией, от родительского объекта к дочернему.
+    //Есть еще :     ALL,PERSIST,MERGE,REMOVE,REFRESH,DETACH;
     private List<PostComment> comments = new ArrayList<>();
 
     //сгенерировался дефолтный конструктор

@@ -1,5 +1,11 @@
 package epam.edu.configuration;
 
+import net.ttddyy.dsproxy.ExecutionInfo;
+import net.ttddyy.dsproxy.QueryInfo;
+import net.ttddyy.dsproxy.listener.QueryExecutionListener;
+import net.ttddyy.dsproxy.listener.logging.CommonsLogLevel;
+import net.ttddyy.dsproxy.support.ProxyDataSource;
+import net.ttddyy.dsproxy.support.ProxyDataSourceBuilder;
 import org.apache.tomcat.dbcp.dbcp2.BasicDataSource;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
@@ -9,6 +15,7 @@ import org.springframework.transaction.PlatformTransactionManager;
 import org.springframework.transaction.annotation.EnableTransactionManagement;
 
 import javax.sql.DataSource;
+import java.util.List;
 import java.util.Properties;
 
 @Configuration
@@ -44,8 +51,23 @@ public class HibernateConfig {
         dataSource.setMaxIdle(5);
         // Maximum number of actual connection in the pool
         dataSource.setMaxTotal(20);
-
-        return dataSource;
+        // Create ProxyDataSource
+        ProxyDataSource proxyDataSource = ProxyDataSourceBuilder.create(dataSource)
+                .logQueryByCommons(CommonsLogLevel.INFO)
+                // .logQueryToSysOut()
+                .countQuery()
+                .multiline()
+                .listener(new QueryExecutionListener() {
+                    @Override
+                    public void beforeQuery(ExecutionInfo info, List<QueryInfo> queryInfos) {
+                        System.out.println("Before Query Execution");
+                    }
+                    @Override
+                    public void afterQuery(ExecutionInfo info, List<QueryInfo> queryInfos) {
+                        System.out.println("\nAfter Query Execution");
+                    }
+                }).build();
+        return proxyDataSource;
     }
 
     @Bean
@@ -78,6 +100,12 @@ public class HibernateConfig {
         hibernateProperties.setProperty("hibernate.show_sql", "true");
        // hibernateProperties.setProperty("hibernate.format_sql", "true");
         hibernateProperties.setProperty("hibernate.generate_statistics", "true");
+        //If our entities use the GenerationType.IDENTITY identifier generator,
+        // Hibernate will silently disable batch inserts/updates.
+        hibernateProperties.setProperty("hibernate.jdbc.batch_size", "5");
+        hibernateProperties.put("hibernate.order_inserts", "true");//сохраняет порядок вставки при batch операциях
+        hibernateProperties.put("hibernate.order_updates", "true");//сохраняет порядок update при batch операциях
+        hibernateProperties.put("hibernate.batch_versioned_data", "true");//сохраняет порядок версионирования при batch операциях
         return hibernateProperties;
     }
 }
