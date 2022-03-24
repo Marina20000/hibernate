@@ -93,3 +93,42 @@ Entity
 Автогенерация ключей
 https://habr.com/ru/company/haulmont/blog/653843/
 еще по автогенерации и составным ключам https://javascopes.com/hibernate-identifiers-c815d505/
+GenerationType.IDENTITY:
+    @Id
+    @GeneratedValue (strategy = GenerationType.IDENTITY)//это генерация идентичности
+    private long studentId;    //при этой стратегии отключено пакетное обновление!!!!!
+
+  GenerationType.SEQUENCE: Самый быстрый способ!!! Многократно быстрее остальных!!!!!
+  рекомендуемый способ генерации. Поддерживается Postgres, Oracle. Не поддерживается MySql
+  @Id//sequenceName = "JPA_SEQUENCE" - последовательность будет сгенерирована сама,
+  //не обязательно ее указывать.
+  @SequenceGenerator( name = "jpaSequence", sequenceName = "JPA_SEQUENCE", allocationSize = 1, initialValue = 1 )
+  @GeneratedValue( strategy = GenerationType.SEQUENCE, generator = "jpaSequence")
+  Можно и так определить:
+      @Id
+      @GeneratedValue(generator = "sequence-generator")
+      @GenericGenerator(
+        name = "sequence-generator",
+        strategy = "org.hibernate.id.enhanced.SequenceStyleGenerator",
+        parameters = {
+          @Parameter(name = "sequence_name", value = "user_sequence"),
+          @Parameter(name = "initial_value", value = "4"),
+          @Parameter(name = "increment_size", value = "1")
+          }
+      )
+      private long userId;
+Сгенерированные значения уникальны для каждой последовательности. Если вы не укажете имя последовательности,
+Hibernate будет повторно использовать один и тот же hibernate_sequence для разных типов.
+
+GenerationType.TABLE:
+    @Id
+    @GeneratedValue(strategy = GenerationType.TABLE,
+      generator = "table-generator")
+    @TableGenerator(name = "table-generator",
+      table = "dep_ids",
+      pkColumnName = "seq_id",
+      valueColumnName = "seq_value")
+    private long depId;
+    Недостатком этого метода является то, что он плохо масштабируется и может негативно повлиять на производительность.
+
+GenerationType.AUTO  согласно документации, отдается на откуп по реализации базе данных

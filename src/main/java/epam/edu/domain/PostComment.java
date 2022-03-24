@@ -11,7 +11,10 @@ public class PostComment {
     //в которых стоит GenerationType.AUTO
     //похоже, что от нее зависит и последовательность, которая сгенерировалась
     //в Post:  post_id_seq принимает значение на 1 больше, чем hibernate_seq
-    @GeneratedValue(strategy = GenerationType.AUTO)
+    @GeneratedValue(strategy = GenerationType.IDENTITY)
+    //для PostComment IDENTITY и для Post  SEQUENCE  дает правильную генерацию id
+    //во всех других случаях получалось, что последовательность организовывалась по факту одна.
+    //Важно! IDENTITY отключает пакетное обновление!!!!!!!!!!
     private Long id;
     private String review;
     //сгенерировался дефолтный конструктор

@@ -24,7 +24,8 @@ public class Application {
             post.setTitle("title");
             post.setComments(Arrays.asList(postComment));
             session.beginTransaction();
-            session.persist(postComment);
+            //postComment записывается сам
+            //session.persist(postComment);
             session.save(post);
             session.getTransaction().commit();
         }
