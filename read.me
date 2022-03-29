@@ -440,4 +440,12 @@ select currval('pet_id_seq')
 (особенно UUID). Также, хотя это и не очень распространенный случай, поговорим о составных ID,
 там тоже есть что обсудить.
 
+Отношения.
+1) @OneToMany лучше реализовать как bidirectional:
+@ManyToOne might be just enough
+Just because you have the option of using the @OneToMany annotation, it does not mean this should be the default option for every one-to-many database relationship. The problem with collections is that we can only use them when the number of child records is rather limited.
+    Therefore, in reality, @OneToMany is practical only when many means few. Maybe @OneToFew would have been a more suggestive name for this annotation.
+Bidirectional @OneToMany associations are way better than unidirectional ones because they rely on the @ManyToOne relationship, which is always efficient in terms of generated SQL statements.
+But then, even if they are very convenient, you don’t always have to use collections. The @ManyToOne association is the most natural and also efficient way of mapping a one-to-many database relationship.
+
 https://habr.com/ru/company/haulmont/blog/547514/   краткий обзор JpaBuddy

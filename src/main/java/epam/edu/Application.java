@@ -2,6 +2,8 @@ package epam.edu;
 
 import epam.edu.domain.Post;
 import epam.edu.domain.PostComment;
+import epam.edu.domain.onetomany.Person;
+import epam.edu.domain.onetomany.Phone;
 import org.hibernate.Session;
 import org.hibernate.SessionFactory;
 import org.springframework.context.ConfigurableApplicationContext;
@@ -21,14 +23,14 @@ public class Application {
             session.beginTransaction();
             //postComment записывается сам, т.к. стоит CASCADE.ALL
             //session.persist(postComment);
-            for(int i=0; i<10; i++) {
-                PostComment postComment = new PostComment();
-                postComment.setReview("review");
-                Post post = new Post();
-                post.setTitle("title");
-                post.setComments(Arrays.asList(postComment));
-                session.save(post);
-            }
+//            for(int i=0; i<10; i++) {
+//                PostComment postComment = new PostComment();
+//                postComment.setReview("review");
+//                Post post = new Post();
+//                post.setTitle("title");
+//                post.setComments(Arrays.asList(postComment));
+//                session.save(post);
+//            }
             //в лог вывелось
             //Before Query Execution
             //INFO  CommonsQueryLoggingListener -
@@ -37,7 +39,25 @@ public class Application {
             //Query:["insert into post_post_comment (Post_id, comments_id) values (?, ?)"]
             //Params:[(3,3),(4,4),(5,5),(6,6),(7,7)]      началось с 3, т.к. уже были записи.
             //Объем батча равен 5. Потом записалась еще вторая порция
+
+
+
+            Person person = new Person();
+            Phone phone1 = new Phone( "123-456-7890" );
+            Phone phone2 = new Phone( "321-654-0987" );
+
+            person.getPhones().add( phone1 );//при такой конфигурации- не загрузились id в phone_person_id
+            person.getPhones().add( phone2 );
+            session.persist( person );
+            session.flush();
+            Long id = person.getId();
+            //session.delete(phone1); - так просто удалять нельзя! надо: person.getPhones().remove(phone1)
+            //манипуляции с удалением дочерних сущностей - только через родительскую!!!!!
+            //System.out.println(person.getPhones().size());
+            session.clear();
             session.getTransaction().commit();
+            Person loadedPerson =session.get(Person.class, id);
+            System.out.println(loadedPerson.getPhones());
         }
     }
 }

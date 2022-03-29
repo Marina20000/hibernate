@@ -20,18 +20,22 @@ public class Post {
     //MySQL не поддерживает SEQUENCE, для этой db только IDENTITY
     @GeneratedValue(strategy = GenerationType.SEQUENCE)
     private Long id;
-
+    @Basic( fetch = FetchType.LAZY )
     private String title;
     //сгенерировалась вспомогательная таблица post_post_comments
     //post_id  bigint notnull foreign key (post_id->id);
     //comments_id bigint notnull foreign key (comments_id->id) unique comments_id;
     @OneToMany(
+            mappedBy = "post",
             cascade = CascadeType.ALL,
             orphanRemoval = true
     )
     //CascadeType.ALL Каскад.ALL распространяет все операции, включая операции,
     // связанные с гибернацией, от родительского объекта к дочернему.
     //Есть еще :     ALL,PERSIST,MERGE,REMOVE,REFRESH,DETACH;
+    //@JoinColumn(name = "post_id") //убираем таблицу post_post_comments
+    //если не указывать по какому столбцу джойнить, то появится вспомогательная таблица post_post_comments
+    //если есть @JoinColumn, то не надо mappedBy = "post",
     private List<PostComment> comments = new ArrayList<>();
 
     //сгенерировался дефолтный конструктор

@@ -62,6 +62,7 @@ public class HibernateConfig {
                     public void beforeQuery(ExecutionInfo info, List<QueryInfo> queryInfos) {
                         System.out.println("Before Query Execution");
                     }
+
                     @Override
                     public void afterQuery(ExecutionInfo info, List<QueryInfo> queryInfos) {
                         System.out.println("\nAfter Query Execution");
@@ -94,11 +95,11 @@ public class HibernateConfig {
 //        update: обновить схему.
 //        create: создает схему, уничтожая предыдущие данные.
 //        create-drop: отказаться от схемы, когда SessionFactory закрывается явно, как правило, когда приложение остановлено.
-//        hibernateProperties.setProperty("hibernate.hbm2ddl.auto", "create-drop");
+        hibernateProperties.setProperty("hibernate.hbm2ddl.auto", "create-drop");
         hibernateProperties.setProperty(
                 "hibernate.dialect", "org.hibernate.dialect.PostgreSQLDialect");
         hibernateProperties.setProperty("hibernate.show_sql", "true");
-       // hibernateProperties.setProperty("hibernate.format_sql", "true");
+        // hibernateProperties.setProperty("hibernate.format_sql", "true");
         hibernateProperties.setProperty("hibernate.generate_statistics", "true");
         //If our entities use the GenerationType.IDENTITY identifier generator,
         // Hibernate will silently disable batch inserts/updates.
@@ -106,6 +107,7 @@ public class HibernateConfig {
         hibernateProperties.put("hibernate.order_inserts", "true");//сохраняет порядок вставки при batch операциях
         hibernateProperties.put("hibernate.order_updates", "true");//сохраняет порядок update при batch операциях
         hibernateProperties.put("hibernate.batch_versioned_data", "true");//сохраняет порядок версионирования при batch операциях
+
         return hibernateProperties;
     }
 }

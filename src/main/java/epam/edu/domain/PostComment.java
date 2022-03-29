@@ -1,9 +1,12 @@
 package epam.edu.domain;
 
+import org.hibernate.annotations.Immutable;
+
 import javax.persistence.*;
 
 @Entity(name = "PostComment")
 @Table(name = "post_comment")
+@Immutable//entity read-only
 public class PostComment {
 
     @Id
@@ -18,6 +21,8 @@ public class PostComment {
     private Long id;
     private String review;
     //сгенерировался дефолтный конструктор
+    @ManyToOne(fetch = FetchType.LAZY)
+    private Post post;
 
     public void setId(Long id) {
         this.id = id;
@@ -25,5 +30,9 @@ public class PostComment {
 
     public void setReview(String review) {
         this.review = review;
+    }
+
+    public void setPost(Post post) {
+        this.post = post;
     }
 }

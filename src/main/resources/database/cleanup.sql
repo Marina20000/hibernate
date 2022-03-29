@@ -1,0 +1,10 @@
+drop table if exists orderentry;
+drop table if exists post_comment;
+drop table if exists post;
+drop table if exists person_phone;
+drop table if exists phone;
+drop table if exists person;
+drop table if exists phoneManyToOne;
+drop table if exists personManyToOne;
+drop sequence if exists hibernate_sequence;
+drop sequence if exists post_comment_id_seq;
