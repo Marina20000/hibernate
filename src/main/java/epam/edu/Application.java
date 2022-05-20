@@ -1,16 +1,15 @@
 package epam.edu;
 
-import epam.edu.domain.Post;
-import epam.edu.domain.PostComment;
-import epam.edu.domain.onetomany.Person;
-import epam.edu.domain.onetomany.Phone;
+import epam.edu.domain.onetomany.bidirectional.BidirectionalPerson;
+import epam.edu.domain.onetomany.bidirectional.BidirectionalPhone;
+import epam.edu.domain.onetomany.unidirectional.Person;
+import epam.edu.domain.onetomany.unidirectional.Phone;
 import org.hibernate.Session;
 import org.hibernate.SessionFactory;
 import org.springframework.context.ConfigurableApplicationContext;
 import org.springframework.context.annotation.AnnotationConfigApplicationContext;
 import org.springframework.orm.hibernate5.LocalSessionFactoryBean;
 
-import java.util.Arrays;
 
 public class Application {
     public static void main(String... args) {
@@ -41,23 +40,33 @@ public class Application {
             //Объем батча равен 5. Потом записалась еще вторая порция
 
 
-
             Person person = new Person();
-            Phone phone1 = new Phone( "123-456-7890" );
-            Phone phone2 = new Phone( "321-654-0987" );
+            Phone phone1 = new Phone("123-456-7890");
+            Phone phone2 = new Phone("321-654-0987");
 
-            person.getPhones().add( phone1 );//при такой конфигурации- не загрузились id в phone_person_id
-            person.getPhones().add( phone2 );
-            session.persist( person );
+            person.getPhones().add(phone1);//при такой конфигурации- не загрузились id в phone_person_id
+            person.getPhones().add(phone2);
+            session.persist(person);
             session.flush();
             Long id = person.getId();
             //session.delete(phone1); - так просто удалять нельзя! надо: person.getPhones().remove(phone1)
+            //иначе вообще ничего не удалится!
             //манипуляции с удалением дочерних сущностей - только через родительскую!!!!!
             //System.out.println(person.getPhones().size());
             session.clear();
+
+            BidirectionalPerson bidirectionalPerson = new BidirectionalPerson();
+            BidirectionalPhone bidirectionalPhone1 = new BidirectionalPhone("111");
+            BidirectionalPhone bidirectionalPhone2 = new BidirectionalPhone("222");
+            bidirectionalPerson.addPhone(bidirectionalPhone1);
+            bidirectionalPerson.addPhone(bidirectionalPhone2);
+            session.persist(bidirectionalPerson);
+            id = bidirectionalPerson.getId();
+            Long phoneId=bidirectionalPhone1.getId();
             session.getTransaction().commit();
-            Person loadedPerson =session.get(Person.class, id);
-            System.out.println(loadedPerson.getPhones());
+            BidirectionalPerson loadedPerson = session.get(BidirectionalPerson.class, id);
+            session.close();
+            System.out.println(loadedPerson);
         }
     }
 }

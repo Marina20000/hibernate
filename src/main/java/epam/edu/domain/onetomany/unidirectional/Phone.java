@@ -1,4 +1,4 @@
-package epam.edu.domain.onetomany;
+package epam.edu.domain.onetomany.unidirectional;
 
 import javax.persistence.Column;
 import javax.persistence.Entity;
@@ -20,5 +20,13 @@ public class Phone {
 
     public Phone(String number) {
         this.number = number;
+    }
+
+    @Override
+    public String toString() {
+        return "Phone{" +
+                "id=" + id +
+                ", number='" + number + '\'' +
+                '}';
     }
 }

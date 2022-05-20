@@ -108,6 +108,8 @@ public class HibernateConfig {
         hibernateProperties.put("hibernate.order_updates", "true");//сохраняет порядок update при batch операциях
         hibernateProperties.put("hibernate.batch_versioned_data", "true");//сохраняет порядок версионирования при batch операциях
 
+        hibernateProperties.put("hibernate.connection.provider_disables_autocommit", "false");
+
         return hibernateProperties;
     }
 }

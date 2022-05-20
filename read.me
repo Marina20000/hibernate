@@ -24,6 +24,8 @@ connection pool configured via parameters and classpath.
 <property name="hibernate.c3p0.unreturnedConnectionTimeout">30</property>
 <property name="hibernate.c3p0.debugUnreturnedConnectionStackTraces">true</property>
 
+Замечание: в spring-boot приложениях изпользуется по умолчанию hikari connection pool.
+
 Замечание о транзакциях: транзакция на одно соединение может быть только одна
 Из статьи 16-го года https://easyjava.ru/data/pool/ispolzovanie-pulov-soedinenij-v-hibernate/
 Дело в том, что как и в случае в JDBC, Hibernate открывает ровно одно соединение с базой данных
@@ -449,3 +451,8 @@ Bidirectional @OneToMany associations are way better than unidirectional ones be
 But then, even if they are very convenient, you don’t always have to use collections. The @ManyToOne association is the most natural and also efficient way of mapping a one-to-many database relationship.
 
 https://habr.com/ru/company/haulmont/blog/547514/   краткий обзор JpaBuddy
+
+
+
+Liquibase: https://www.baeldung.com/liquibase-refactor-schema-of-java-app,
+https://habr.com/ru/post/436994/?
