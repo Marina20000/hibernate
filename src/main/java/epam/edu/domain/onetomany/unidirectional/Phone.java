@@ -1,18 +1,19 @@
 package epam.edu.domain.onetomany.unidirectional;
 
-import javax.persistence.Column;
-import javax.persistence.Entity;
-import javax.persistence.GeneratedValue;
-import javax.persistence.Id;
+import org.hibernate.annotations.CacheConcurrencyStrategy;
+
+import javax.persistence.*;
 
 @Entity(name = "Phone")
+@Cacheable
+@org.hibernate.annotations.Cache(usage = CacheConcurrencyStrategy.READ_WRITE)
 public class Phone {
 
     @Id
     @GeneratedValue
     private Long id;
 
-    @Column(name = "`number`")
+    @Column(name = "number")
     private String number;
 
     public Phone() {

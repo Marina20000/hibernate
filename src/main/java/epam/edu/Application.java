@@ -4,6 +4,8 @@ import epam.edu.domain.onetomany.bidirectional.BidirectionalPerson;
 import epam.edu.domain.onetomany.bidirectional.BidirectionalPhone;
 import epam.edu.domain.onetomany.unidirectional.Person;
 import epam.edu.domain.onetomany.unidirectional.Phone;
+import epam.edu.queries.HqlExample;
+import net.sf.ehcache.CacheManager;
 import org.hibernate.Session;
 import org.hibernate.SessionFactory;
 import org.springframework.context.ConfigurableApplicationContext;
@@ -14,7 +16,7 @@ import org.springframework.orm.hibernate5.LocalSessionFactoryBean;
 public class Application {
     public static void main(String... args) {
         ConfigurableApplicationContext context =
-                new AnnotationConfigApplicationContext("epam.edu.configuration");
+                new AnnotationConfigApplicationContext("epam.edu.configuration", "epam.edu.queries");
         LocalSessionFactoryBean sessionFactoryBean = context.getBean(LocalSessionFactoryBean.class);
         SessionFactory sessionFactory = sessionFactoryBean.getObject();
         assert sessionFactory != null;
@@ -62,11 +64,16 @@ public class Application {
             bidirectionalPerson.addPhone(bidirectionalPhone2);
             session.persist(bidirectionalPerson);
             id = bidirectionalPerson.getId();
-            Long phoneId=bidirectionalPhone1.getId();
+            Long phoneId = bidirectionalPhone1.getId();
             session.getTransaction().commit();
             BidirectionalPerson loadedPerson = session.get(BidirectionalPerson.class, id);
+            HqlExample hqlExample = context.getBean(HqlExample.class);
+            hqlExample.hqlQuery(session);
+            hqlExample.criteriaExample(session);
+            int size = CacheManager.ALL_CACHE_MANAGERS.get(0)
+                    .getCache("com.baeldung.hibernate.cache.model.Foo").getSize();
             session.close();
-            System.out.println(loadedPerson);
+            //System.out.println(loadedPerson);
         }
     }
 }

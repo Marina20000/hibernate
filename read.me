@@ -453,6 +453,40 @@ But then, even if they are very convenient, you don’t always have to use colle
 https://habr.com/ru/company/haulmont/blog/547514/   краткий обзор JpaBuddy
 
 
+CACHE
+Strategy/Provider	Read-only	Nonstrictread-write	Read-write	Transactional
+EHCache             	X	              X	            X
+OSCache	                X	              X	            X
+SwarmCache	            X	              X
+JBoss Cache	            X	 	                                      X
+
+Еще одна важная деталь про кеш второго уровня про которую стоило бы упомянуть —
+хибернейт не хранит сами объекты Ваших классов. Он хранит информацию в виде массивов строк, чисел и т. д.
+И идентификатор объекта выступает указателем на эту информацию. Концептуально это нечто вроде Map,
+в которой id объекта — ключ, а массивы данных — значение. Приблизительно можно представить себе это так:
+1 -> { "Pupkin", 1, null , {1,2,5} }
+
+Помимо вышесказанного, следует помнить — зависимости Вашего класса по умолчанию также не кешируются. Например, если рассмотреть класс выше — SharedDoc, то при выборке коллекция users будет доставаться из БД, а не из кеша второго уровня. Если Вы хотите также кешировать и зависимости, то класс должен выглядеть так:
+@Entity
+@Table(name = "shared_doc")
+@Cache(usage = CacheConcurrencyStrategy.READ_WRITE)
+public class SharedDoc{
+    @Cache(usage = CacheConcurrencyStrategy.READ_WRITE)
+    private Set<User> users;    Для коллекций надо явно указывать, что они должны тянуться из кеша!!!!
+}
+И последняя деталь — чтение из кеша второго уровня происходит только в том случае,
+если нужный объект не был найден в кеше первого уровня.
+Чтобы искать именно в кеше, надо ставить параметры:
+query.setCacheable(true);
+query.setCacheRegion("phone");
+
+ Cache Concurrency Strategy
+Based on use cases, we are free to pick one of the following cache concurrency strategies:
+
+READ_ONLY: Used only for entities that never change (exception is thrown if an attempt to update such an entity is made). It is very simple and performant. Very suitable for some static reference data that don't change
+NONSTRICT_READ_WRITE: Cache is updated after a transaction that changed the affected data has been committed. Thus, strong consistency is not guaranteed and there is a small time window in which stale data may be obtained from cache. This kind of strategy is suitable for use cases that can tolerate eventual consistency
+READ_WRITE: This strategy guarantees strong consistency which it achieves by using ‘soft' locks: When a cached entity is updated, a soft lock is stored in the cache for that entity as well, which is released after the transaction is committed. All concurrent transactions that access soft-locked entries will fetch the corresponding data directly from database
+TRANSACTIONAL: Cache changes are done in distributed XA transactions. A change in a cached entity is either committed or rolled back in both database and cache in the same XA transaction
 
 Liquibase: https://www.baeldung.com/liquibase-refactor-schema-of-java-app,
 https://habr.com/ru/post/436994/?

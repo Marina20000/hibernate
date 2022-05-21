@@ -108,7 +108,17 @@ public class HibernateConfig {
         hibernateProperties.put("hibernate.order_updates", "true");//сохраняет порядок update при batch операциях
         hibernateProperties.put("hibernate.batch_versioned_data", "true");//сохраняет порядок версионирования при batch операциях
 
+        //https://vladmihalcea.com/why-you-should-always-use-hibernate-connection-provider_disables_autocommit-for-resource-local-jpa-transactions/
+        //hibernate.connection.provider_disables_autocommit=false  - при первом подключении к базе устанавливает там
+        //hint autocommit=false. Это поведение дает возможность в случае, когда у нас single Datasource, захватывать соединение с базой
+        //не при старте транзакции, а при выполнении первого запроса.
+        //В распределенных транзакциях именно такое поведение: соединение с базами захватывается только на время выполнения Statement.
         hibernateProperties.put("hibernate.connection.provider_disables_autocommit", "false");
+
+        hibernateProperties.put("hibernate.cache.use_second_level_cache", "true");
+        hibernateProperties.put("hibernate.cache.region.factory_class", "org.hibernate.cache.ehcache.EhCacheRegionFactory");
+        //Фабрика сессий также может генерировать и сохранять статистику использования всех объектов, регионов, зависимостей в кеше:
+        hibernateProperties.put("hibernate.cache.use_structured_entries", "true");
 
         return hibernateProperties;
     }
