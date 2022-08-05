@@ -38,7 +38,7 @@ public class BidirectionalPhone {
         return "BidirectionalPhone{" +
                 "id=" + id +
                 ", number='" + number + '\'' +
-                ", bidirectionalPerson=" + bidirectionalPerson +
+                //", bidirectionalPerson=" + bidirectionalPerson +
                 '}';
     }
 

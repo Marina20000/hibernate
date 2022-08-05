@@ -71,9 +71,9 @@ public class Application {
             hqlExample.hqlQuery(session);
             hqlExample.criteriaExample(session);
             int size = CacheManager.ALL_CACHE_MANAGERS.get(0)
-                    .getCache("com.baeldung.hibernate.cache.model.Foo").getSize();
+                    .getCache("epam.edu.domain.onetomany.unidirectional.Phone").getSize();
             session.close();
-            //System.out.println(loadedPerson);
+            System.out.println(size);
         }
     }
 }
